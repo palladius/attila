@@ -66,14 +66,23 @@ def init_project(project_id, storage, harness):
     # Write .env file if it doesn't exist
     env_file = base_dir / ".env"
     if not env_file.exists():
+        # Try to auto-detect active gcloud identity
+        import subprocess
+        try:
+            detected_identity = subprocess.check_output(["gcloud", "config", "get-value", "account"], text=True).strip()
+        except Exception:
+            detected_identity = "YOUR_GCP_IDENTITY_HERE"
+
         env_content = f"""# A.TT.I.L.A. Environment Configuration
 PROJECT_ID={project_id}
+GCP_IDENTITY={detected_identity}
 STORAGE_TYPE={storage}
 HARNESS={harness}
 GEMINI_API_KEY=YOUR_GEMINI_API_KEY_HERE
 """
         env_file.write_text(env_content)
-        print(f"\033[32m[+] Created .env configuration file. Please populate your GEMINI_API_KEY!\033[0m")
+        print(f"\033[32m[+] Created .env configuration file with detected identity: {detected_identity}\033[0m")
+        print(f"    Please populate your GEMINI_API_KEY in the .env file!")
     else:
         print(f"\033[33m[!] The .env file already exists, skipping creation.\033[0m")
 

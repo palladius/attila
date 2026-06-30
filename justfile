@@ -16,6 +16,15 @@ init project_id:
 
 # Set up the GCP infrastructure using Terraform and extract keys
 setup-infra project_id:
+	@ACTIVE_IDENTITY=$$(gcloud config get-value account 2>/dev/null); \
+	GCP_IDENTITY=$$(grep -E "^GCP_IDENTITY=" .env | cut -d= -f2 | tr -d '"'\'' '); \
+	if [ "$$ACTIVE_IDENTITY" != "$$GCP_IDENTITY" ]; then \
+		echo "[-] ERROR: Identity mismatch!"; \
+		echo "    Active gcloud account: $$ACTIVE_IDENTITY"; \
+		echo "    Required .env account: $$GCP_IDENTITY"; \
+		echo "    Please run: gcloud config set account $$GCP_IDENTITY"; \
+		exit 1; \
+	fi
 	@echo "[+] Running Terraform Apply..."
 	cd terraform && terraform apply -var="project_id={{project_id}}" -auto-approve
 	@echo "[+] Extracting Service Account Key to ./credentials.json..."
