@@ -2,7 +2,7 @@
 # "A come atroce, T come terremoto, T come tragedia, I come iradiddio..."
 
 # Load .env file automatically
-dotenv
+set dotenv-load := true
 
 # Print help by default
 default:

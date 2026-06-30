@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """
 Project A.TT.I.L.A. (Flagello di Dio) - Setup and Orchestration CLI.
-"A come atroce, T come terremoto, T come tragedia, I come iradiddio..."
+"A come Atrocita, TT come Terraform e Tragedia, I come Iradiddio..."
 """
 
 import os
@@ -38,7 +38,7 @@ def print_quote():
     print(f"\033[33m\"{random.choice(QUOTES)}\"\033[0m\n")
 
 def init_project(project_id, storage, harness):
-    print(f"\033[32m[+] Inizializzazione dello sbabbaro per il progetto: {project_id}...\033[0m")
+    print(f"\033[32m[+] Initializing barbarian agent for project: {project_id}...\033[0m")
     
     # Define directory paths (pointing to project root)
     base_dir = Path(__file__).parent.parent
@@ -50,7 +50,7 @@ def init_project(project_id, storage, harness):
     # Create directories
     for d in [discovery_dir, rules_dir, investigations_dir]:
         d.mkdir(parents=True, exist_ok=True)
-        print(f"    - Creata directory: {d.relative_to(base_dir)}")
+        print(f"    - Created directory: {d.relative_to(base_dir)}")
         
     # Write a default user rule
     user_rule_file = rules_dir / "30-user.md"
@@ -61,7 +61,7 @@ def init_project(project_id, storage, harness):
 - Highlight any resource that has no active traffic or is costing unusually high.
 - Always output the resource graph in JSON format under `/memory/architecture.json`.
 """)
-        print(f"    - Creato file di regole: {user_rule_file.relative_to(base_dir)}")
+        print(f"    - Created rule file: {user_rule_file.relative_to(base_dir)}")
 
     # Write .env file if it doesn't exist
     env_file = base_dir / ".env"
@@ -73,16 +73,16 @@ HARNESS={harness}
 GEMINI_API_KEY=YOUR_GEMINI_API_KEY_HERE
 """
         env_file.write_text(env_content)
-        print(f"\033[32m[+] Creato file di configurazione .env. Inserisci la tua GEMINI_API_KEY!\033[0m")
+        print(f"\033[32m[+] Created .env configuration file. Please populate your GEMINI_API_KEY!\033[0m")
     else:
-        print(f"\033[33m[!] Il file .env esiste già, salto la creazione.\033[0m")
+        print(f"\033[33m[!] The .env file already exists, skipping creation.\033[0m")
 
-    print(f"\033[32m[+] Fatto! Lo sbabbaro è pronto a radere al suolo il progetto!\033[0m")
+    print(f"\033[32m[+] Done! The barbarian is ready to discover the project!\033[0m")
 
 def run_agent(project_id, storage, harness):
     print_quote()
-    print(f"\033[31m[!] ATTENZIONE: Avvio dello spapparo in corso...\033[0m")
-    print(f"    - Progetto: {project_id}")
+    print(f"\033[31m[!] WARNING: Starting the spapparo agent...\033[0m")
+    print(f"    - Project: {project_id}")
     print(f"    - Harness: {harness}")
     print(f"    - Storage: {storage}")
     
@@ -90,17 +90,17 @@ def run_agent(project_id, storage, harness):
     base_dir = Path(__file__).parent.parent
     env_file = base_dir / ".env"
     if not env_file.exists():
-        print(f"\033[31m[-] Errore: File .env non trovato. Esegui prima 'attila init'!\033[0m")
+        print(f"\033[31m[-] Error: .env file not found. Run 'attila init' first!\033[0m")
         sys.exit(1)
         
     # Check for service account key
     sa_key_path = Path.home() / "git/gemini-cli-tools/tools/gcp/service-account-key.json"
     if not sa_key_path.exists():
-        print(f"\033[33m[!] Attenzione: Chiave del Service Account non trovata in {sa_key_path}.\033[0m")
-        print(f"    Assicurati che sia presente prima di lanciare il container Docker.")
+        print(f"\033[33m[!] Warning: Service Account key not found at {sa_key_path}.\033[0m")
+        print(f"    Ensure it is present before running the Docker container.")
 
     # We will print the docker run command that can be executed
-    print("\033[32m[+] Per avviare il container, esegui:\033[0m")
+    print("\033[32m[+] To start the container, run:\033[0m")
     print(f"    just run-discovery {project_id}")
 
 def main():
@@ -113,16 +113,16 @@ def main():
     subparsers = parser.add_subparsers(dest="command", required=True)
     
     # Init command
-    init_parser = subparsers.add_parser("init", help="Inizializza l'ambiente di lavoro per un progetto")
-    init_parser.add_argument("--project-id", required=True, help="ID del progetto GCP")
-    init_parser.add_argument("--storage", choices=["local", "gcs"], default="local", help="Tipo di storage (default: local)")
-    init_parser.add_argument("--harness", choices=["geminicli", "adk"], default="geminicli", help="Harness dell'agente (default: geminicli)")
+    init_parser = subparsers.add_parser("init", help="Initialize the workspace for a project")
+    init_parser.add_argument("--project-id", required=True, help="GCP Project ID")
+    init_parser.add_argument("--storage", choices=["local", "gcs"], default="local", help="Storage type (default: local)")
+    init_parser.add_argument("--harness", choices=["geminicli", "adk"], default="geminicli", help="Agent harness (default: geminicli)")
     
     # Run command
-    run_parser = subparsers.add_parser("run", help="Avvia l'investigazione dello spapparo")
-    run_parser.add_argument("--project-id", required=True, help="ID del progetto GCP")
-    run_parser.add_argument("--storage", choices=["local", "gcs"], default="local", help="Tipo di storage (default: local)")
-    run_parser.add_argument("--harness", choices=["geminicli", "adk"], default="geminicli", help="Harness dell'agente (default: geminicli)")
+    run_parser = subparsers.add_parser("run", help="Start the spapparo investigation")
+    run_parser.add_argument("--project-id", required=True, help="GCP Project ID")
+    run_parser.add_argument("--storage", choices=["local", "gcs"], default="local", help="Storage type (default: local)")
+    run_parser.add_argument("--harness", choices=["geminicli", "adk"], default="geminicli", help="Agent harness (default: geminicli)")
     
     args = parser.parse_args()
     
