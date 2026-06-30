@@ -4,6 +4,8 @@
 # Load .env file automatically
 set dotenv-load := true
 
+version := `cat VERSION`
+
 # Print help by default
 default:
 	@just -f {{justfile()}} --list
@@ -14,7 +16,7 @@ init project_id:
 
 # Build the spapparo docker container
 docker-build:
-	docker build -t attila:v0.1.0 .
+	docker build -t attila:v{{version}} .
 
 # Run the GCP discovery agent
 run-discovery project_id:
@@ -27,4 +29,4 @@ run-discovery project_id:
 		-e GEMINI_API_KEY="$GEMINI_API_KEY" \
 		-v $(pwd)/memory/{{project_id}}:/memory \
 		-v ~/git/gemini-cli-tools/tools/gcp/service-account-key.json:/etc/gcp/sa-key.json:ro \
-		attila:v0.1.0
+		attila:v{{version}}
