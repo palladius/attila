@@ -29,6 +29,11 @@ resource "google_service_account" "sre_investigator" {
   description  = "Restricted Service Account used by spapparo agent for read-only SRE investigations."
 }
 
+# Generate a private key for the Service Account
+resource "google_service_account_key" "sre_investigator_key" {
+  service_account_id = google_service_account.sre_investigator.name
+}
+
 # Grant Viewer role to the Service Account on the project
 resource "google_project_iam_member" "sre_investigator_viewer" {
   project = var.project_id
