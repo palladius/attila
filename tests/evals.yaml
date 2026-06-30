@@ -1,0 +1,9 @@
+global:
+  min_score: 0.7
+
+tests:
+  - name: "GCP Discovery Test"
+    description: "Verify that the agent correctly identifies active resources in the project."
+    prompt: "Perform a GCP discovery of the project."
+    expected_findings:
+      - "sre-next"
