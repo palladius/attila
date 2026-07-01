@@ -65,6 +65,12 @@ run-discovery prompt="" env_file=".env":
 	@chmod +x bin/run-discovery.sh
 	./bin/run-discovery.sh "{{prompt}}" "{{env_file}}"
 
+# Run an arbitrary command inside the container (default: bash)
+docker-run env_file=".env" *cmd="bash":
+	@chmod +x bin/docker-run.sh
+	./bin/docker-run.sh "{{env_file}}" {{cmd}}
+
+
 # Test the configuration and credentials
 test-config env_file=".env":
 	python3 cli/attila.py test-config {{env_file}}

@@ -9,7 +9,7 @@ GREEN='\e[1;32m'
 BLUE='\e[1;36m'
 NC='\e[0m' # No Color
 
-SA_EMAIL="safe-sre-investigator@$PROJECT_ID.iam.gserviceaccount.com"
+SA_EMAIL="${SA_EMAIL:-safe-sre-investigator@$PROJECT_ID.iam.gserviceaccount.com}"
 export GOOGLE_IMPERSONATE_SERVICE_ACCOUNT="$SA_EMAIL"
 
 echo -e "===================================================="
