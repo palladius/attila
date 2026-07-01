@@ -1,19 +1,22 @@
 # A.TT.I.L.A. (Flagello di Dio) 🗡️
 
+<p align="center">
+  <img src="assets/images/attila_sre_squad.jpg" width="400" alt="Attila's Spappari SRE Squad Logo">
+</p>
+
 > *"A come atroce, T come terremoto, T come tragedia, I come iradiddio, L come laco de sangue, A come... come Attila!"* — Diego Abatantuono
 
 Project **A.TT.I.L.A.** is a stateful Site Reliability Engineering (SRE) investigation and cloud discovery tool on Google Cloud Platform (GCP). It enables Gemini-managed agents to retain context, memory, and state across runs by using a persistent storage layer.
 
 ---
 
-## 🎨 Choose Your Logo!
+## 🗡️ Barbarian SREs at Work
 
-We have generated several branding directions for Project A.TT.I.L.A. (having abandoned the minimalist concept as requested):
+Here is a visual representation of the **Spappari SRE Horde** invading a motherboard to perform system diagnostics, troubleshooting, and mitigations:
 
-| Option 1: Attila & the SRE Squad | Option 2: Solo SRE Chieftain | Option 3: Chieftain & Mini-Bots | Option 4: SRE Motherboard Invasion |
-| :---: | :---: | :---: | :---: |
-| ![Squad](assets/images/attila_sre_squad.jpg) | ![Mascot](assets/images/attila_logo_mascot.jpg) | ![Playful](assets/images/attila_logo_playful.jpg) | ![Horde](assets/images/barbarian_horde_sre.jpg) |
-| **Attila & Spappari**: Chieftain alongside his squad of on-call heroes. | **Fierce Mascot**: Attila solo with headset & glowing digital sword. | **3D Isometric**: Chieftain directing robot agents on cloud nodes. | **Horde Motherboard Invasion**: Spappari warriors swarming a motherboard to troubleshoot. |
+<p align="center">
+  <img src="assets/images/barbarian_horde_sre.jpg" width="600" alt="Spappari SRE Motherboard Invasion">
+</p>
 
 ---
 
