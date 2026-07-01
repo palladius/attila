@@ -26,7 +26,10 @@ def run_agent(project_id):
     print(f"[+] Running agent discovery on project: {project_id}...")
     # Trigger the just command to run the discovery
     try:
-        subprocess.run(["just", "run-discovery", project_id], check=True)
+        # Pass empty prompt to use default, and pass PROJECT_ID in the env
+        env = os.environ.copy()
+        env["PROJECT_ID"] = project_id
+        subprocess.run(["just", "run-discovery", ""], env=env, check=True)
     except subprocess.CalledProcessError as e:
         print(f"[-] Error running agent: {e}")
         sys.exit(1)

@@ -8,6 +8,11 @@
 
 set -euo pipefail
 
+# Preserve critical env vars if they are already set in the host environment
+PRESERVED_PROJECT_ID="${PROJECT_ID:-}"
+PRESERVED_SA_EMAIL="${SA_EMAIL:-}"
+PRESERVED_GCP_IDENTITY="${GCP_IDENTITY:-}"
+
 ENV_FILE="${1:-.env}"
 shift # Remove env_file from arguments, remaining are the command to run inside the container
 
@@ -19,6 +24,11 @@ if [ -f "$ENV_FILE" ]; then
 else
   echo "[!] WARNING: Environment file $ENV_FILE not found."
 fi
+
+# Restore preserved values if they were set in the host environment
+if [ -n "$PRESERVED_PROJECT_ID" ]; then PROJECT_ID="$PRESERVED_PROJECT_ID"; fi
+if [ -n "$PRESERVED_SA_EMAIL" ]; then SA_EMAIL="$PRESERVED_SA_EMAIL"; fi
+if [ -n "$PRESERVED_GCP_IDENTITY" ]; then GCP_IDENTITY="$PRESERVED_GCP_IDENTITY"; fi
 
 if [ -z "${PROJECT_ID:-}" ]; then
   echo "[-] ERROR: PROJECT_ID is not set in $ENV_FILE"
@@ -61,6 +71,9 @@ exec docker run --rm -it \
   -e SA_EMAIL="${SA_EMAIL:-}" \
   -e AGENT_PROMPT="${AGENT_PROMPT:-}" \
   -e GEMINI_MODEL="${GEMINI_MODEL:-}" \
+  -e GOOGLE_CLOUD_LOCATION="${GOOGLE_CLOUD_LOCATION:-}" \
+  -e GOOGLE_GENAI_USE_VERTEXAI="${GOOGLE_GENAI_USE_VERTEXAI:-}" \
+  -e GEMINI_API_KEY="${GEMINI_API_KEY:-}" \
   -e CLOUDSDK_CORE_ACCOUNT="$ACTIVE_ACCOUNT" \
   -v "$(pwd)/memory/$PROJECT_ID":/app/memory \
   -v "$ADC_PATH:/adc.json:ro" \

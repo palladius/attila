@@ -51,15 +51,24 @@ gcloud config set auth/impersonate_service_account "$SA_EMAIL"
 echo "[+] Verifying storage access (gcloud storage ls)..."
 gcloud storage ls
 
-# 3. Configure gemini-cli to use Vertex AI
+# 3. Configure gemini-cli
 export GOOGLE_CLOUD_PROJECT="$PROJECT_ID"
-export GOOGLE_CLOUD_LOCATION="us-central1"
-export GOOGLE_GENAI_USE_VERTEXAI=true
+export GOOGLE_CLOUD_LOCATION="${GOOGLE_CLOUD_LOCATION:-us-central1}"
+export GOOGLE_GENAI_USE_VERTEXAI="${GOOGLE_GENAI_USE_VERTEXAI:-true}"
 export GEMINI_MODEL="${GEMINI_MODEL:-gemini-2.5-flash}"
 
 # Ensure gemini-cli config directory exists and pre-trust the /app workspace
 mkdir -p /root/.gemini
 echo '{"/app": "TRUST_FOLDER"}' > /root/.gemini/trustedFolders.json
+
+# Dynamically configure authentication based on GOOGLE_GENAI_USE_VERTEXAI
+if [ "$GOOGLE_GENAI_USE_VERTEXAI" = "false" ]; then
+  echo "[+] Configuring gemini-cli to use global API Key..."
+  echo '{"security": {"auth": {"selectedType": "gemini-api-key"}}}' > /root/.gemini/settings.json
+else
+  echo "[+] Configuring gemini-cli to use Vertex AI..."
+  echo '{"security": {"auth": {"selectedType": "vertex-ai"}}}' > /root/.gemini/settings.json
+fi
 
 # Verify impersonation works for gcloud
 echo "[+] Verifying Service Account impersonation..."
