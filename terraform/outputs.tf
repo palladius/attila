@@ -13,19 +13,7 @@ output "private_bucket_name" {
   description = "The name of the private GCS bucket."
 }
 
-output "gemini_api_key" {
-  value       = google_apikeys_key.gemini_key.key_string
-  sensitive   = true
-  description = "The generated Gemini API Key."
-}
-
 output "pubsub_topic_name" {
   value       = google_pubsub_topic.attila_topic.name
   description = "The name of the Pub/Sub topic."
-}
-
-output "service_account_private_key" {
-  value       = google_service_account_key.sre_investigator_key.private_key
-  sensitive   = true
-  description = "The base64-encoded private key of the Service Account."
 }

@@ -189,3 +189,21 @@ This command runs a series of checks in order of execution speed (fastest/local 
     *   Verifies that the Docker container can be launched and that the internal `gemini-cli` or agent harness can authenticate correctly.
 8.  **End-to-End Discovery Test**:
     *   Triggers a minimal discovery task (e.g., listing GCS buckets via the harness) and verifies the output is successfully written to the local `/memory` directory.
+
+---
+
+## 8. Use Cases
+
+### UC01: Docker-As-An-Agent (CLI Wrapper)
+
+A `docker run` execution should, by default, act as the agent execution itself.
+
+**Is this a good idea?**
+Yes, but only if implemented with **flexible delegation**:
+
+1.  **Bake, Don't Fetch**: Pre-install the Gemini SRE extension and all dependencies during the `docker build` phase. Running `gemini extensions install` on every startup is too slow and depends on network availability.
+2.  **Pass-Through Execution**: The entrypoint should set up the GCP credentials/impersonation and then check if arguments were passed:
+    *   *No arguments:* Execute the default discovery/investigation agent (`exec gemini -y -p "$PROMPT"`).
+    *   *Arguments passed:* Execute the arguments directly (e.g., `docker run attila:v0.1.0 bash` or `docker run attila:v0.1.0 gcloud storage ls`). This preserves debuggability.
+3.  **State Isolation**: All agent state must be written to `/memory`, which is mounted from the host. The container itself remains stateless and disposable.
+

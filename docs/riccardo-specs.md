@@ -141,6 +141,21 @@ It's particularly important to keep an eye on money:
 * How much is an agentic run costing? 
 We want to have an infrastructrue which allows this to be accounted for, also I/O tokens spent per LLM call per API KEY, broekn down by Gemini model called.
 
+## Use Cases
+
+### UC01: Docker-As-An-Agent (CLI Wrapper)
+
+A `docker run` execution should, by default, act as the agent execution itself.
+
+**Is this a good idea?**
+Yes, but only if implemented with **flexible delegation**:
+
+1.  **Bake, Don't Fetch**: Pre-install the Gemini SRE extension and all dependencies during the `docker build` phase. Running `gemini extensions install` on every startup is too slow and depends on network availability.
+2.  **Pass-Through Execution**: The entrypoint should set up the GCP credentials/impersonation and then check if arguments were passed:
+    *   *No arguments:* Execute the default discovery/investigation agent (`exec gemini -y -p "$PROMPT"`).
+    *   *Arguments passed:* Execute the arguments directly (e.g., `docker run attila:v0.1.0 bash` or `docker run attila:v0.1.0 gcloud storage ls`). This preserves debuggability.
+3.  **State Isolation**: All agent state must be written to `/memory`, which is mounted from the host. The container itself remains stateless and disposable.
+
 ### Extensive testing
 
 Creating deterministic code is ~simple. Creating LLM agentic code is hard. It's imperative that we create a rich testing framework around the agentic parts; the idea is to keep agentic pathways as simple as possible, test them locally and ensure they work in some canonical way. We're happy to change the architecture if this allows for better testing.
@@ -223,12 +238,11 @@ Since I',m a developer Advocate for Google cloud for AI and SRE, this repo needs
 
 Let's iterate quick. I want to have a working POC by end of day. The first thing I want to be able to do is:
 
-### Version v0.2 (by EOD June 30):
+### Version v0.2 (by EOD July 1st):
 
 1. terraform works for user ricc@gcp.altostrat.com in project id `sre-next`.
 2. I have a local docker container being able to start the harness to do discovery for the project `sre-next` and save the result as files in the local directory `discovery`, opportuntely mounted on GCS created bucket. If this is too complicated, its also ok to have a docker container running on qa local folder which is STICKY and mounted across muiltiple interactions. While the agent works on its /workspace/ (or whatever) I want to see that mounted folder populating new files which i can observe on my vscode, and why not also communicate with it!
 3. The folder memory is STICKY.
-
 
 
 ## References

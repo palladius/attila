@@ -10,3 +10,5 @@ terraform.tfstate*
 .env.*
 GEMINI.local.md
 private/
+terraform/.terraform.lock.hcl
+.git-privatize
