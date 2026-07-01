@@ -141,6 +141,8 @@ It's particularly important to keep an eye on money:
 * How much is an agentic run costing? 
 We want to have an infrastructrue which allows this to be accounted for, also I/O tokens spent per LLM call per API KEY, broekn down by Gemini model called.
 
+Also all activity from Harnesses running in docker container should be extensively logged somewhere. We should be able to find conversation legft by agent X on executiojn Y some time 10 days ago. This can be achieved via Cloud Logging OR by copying/mounting ~/.gemini/..../ conversations in GCS (note this cannot be BRITTLE, we cant expect the docker container to just terminate gracefully all the time! So a cron job which rsyncs files every 30m doesnt cut it). This is probably harness specific.
+
 ## Use Cases
 
 ### UC01: Docker-As-An-Agent (CLI Wrapper)
