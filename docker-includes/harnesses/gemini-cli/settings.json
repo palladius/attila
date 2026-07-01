@@ -1,0 +1,13 @@
+{
+  "security": {
+    "auth": {
+      "selectedType": "vertex-ai"
+    }
+  },
+  "model": {
+    "name": "gemini-flash-latest"
+  },
+  "experimental": {
+    "dynamicModelConfiguration": false
+  }
+}

@@ -74,10 +74,6 @@ echo "[+] Creating safe_gcloud wrapper..."
 echo -e '#!/bin/bash\nshift\nexec gcloud "$@"' > /usr/local/bin/safe_gcloud
 chmod +x /usr/local/bin/safe_gcloud
 
-# Install the SRE extension for gemini-cli (auto-approve with yes)
-echo "[+] Installing Gemini SRE extension..."
-yes | gemini extensions install https://github.com/gemini-cli-extensions/sre || echo "[!] Extension install failed, continuing..."
-
 # If arguments are passed, execute them instead of the default agent run
 if [ $# -gt 0 ]; then
   echo -e "[+] Executing custom command inside container: ${BLUE}$*${NC}"

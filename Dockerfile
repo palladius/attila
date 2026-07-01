@@ -16,7 +16,13 @@ RUN echo "deb [signed-by=/usr/share/keyrings/cloud.google.gpg] https://packages.
     && rm -rf /var/lib/apt/lists/*
 
 # Install @google/gemini-cli globally
-RUN npm install -g @google/gemini-cli@0.37.2
+RUN npm install -g @google/gemini-cli@0.49.0
+
+# Copy default settings to pre-configure Vertex AI
+COPY docker-includes/harnesses/gemini-cli/settings.json /root/.gemini/settings.json
+
+# Pre-install the Gemini SRE extension
+RUN yes | gemini extensions install https://github.com/gemini-cli-extensions/sre || echo "Warning: Extension install failed during build"
 
 # Set up working directory
 WORKDIR /app
