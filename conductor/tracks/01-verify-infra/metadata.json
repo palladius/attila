@@ -1,0 +1,7 @@
+{
+  "id": "01-verify-infra",
+  "title": "Verify and Run Terraform Infrastructure",
+  "description": "Audit, validate, and execute the Terraform configuration to provision GCP resources and set up local credentials.",
+  "status": "planned",
+  "created_at": "2026-06-30T12:56:00Z"
+}

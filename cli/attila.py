@@ -9,7 +9,7 @@ import sys
 import argparse
 from pathlib import Path
 
-VERSION = "0.2.0"
+VERSION = "0.2.1"
 
 ATTILA_ART = r"""
         ______      __    __      _                 
