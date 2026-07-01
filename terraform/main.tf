@@ -29,16 +29,32 @@ resource "google_service_account" "sre_investigator" {
   description  = "Restricted Service Account used by spapparo agent for read-only SRE investigations."
 }
 
-# Generate a private key for the Service Account
-resource "google_service_account_key" "sre_investigator_key" {
-  service_account_id = google_service_account.sre_investigator.name
+# Key creation disabled due to org policy. Using impersonation instead.
+
+locals {
+  sre_roles = [
+    "roles/viewer",
+    "roles/iam.securityReviewer",
+    "roles/logging.viewer",
+    "roles/monitoring.viewer",
+    "roles/browser",
+    "roles/container.viewer",
+    "roles/compute.viewer",
+    "roles/storage.objectViewer",
+    "roles/run.viewer",
+    "roles/monitoring.dashboardEditor",
+    "roles/bigquery.user",
+    "roles/bigquery.dataViewer",
+    "roles/aiplatform.user"
+  ]
 }
 
-# Grant Viewer role to the Service Account on the project
-resource "google_project_iam_member" "sre_investigator_viewer" {
-  project = var.project_id
-  role    = "roles/viewer"
-  member  = "serviceAccount:${google_service_account.sre_investigator.email}"
+# Grant required roles to the Service Account on the project
+resource "google_project_iam_member" "sre_investigator_roles" {
+  for_each = toset(local.sre_roles)
+  project  = var.project_id
+  role     = each.value
+  member   = "serviceAccount:${google_service_account.sre_investigator.email}"
 }
 
 # 2. GCS Buckets Setup
@@ -54,13 +70,6 @@ resource "google_storage_bucket" "public_bucket" {
     main_page_suffix = "index.html"
     not_found_page   = "404.html"
   }
-}
-
-# Make the public bucket readable by anyone (as specified in the specs for sharing HTML reports)
-resource "google_storage_bucket_iam_member" "public_bucket_all_users" {
-  bucket = google_storage_bucket.public_bucket.name
-  role   = "roles/storage.objectViewer"
-  member = "allUsers"
 }
 
 # Private bucket for internal memory and playbooks
@@ -79,17 +88,11 @@ resource "google_storage_bucket_iam_member" "private_bucket_sa_access" {
   member = "serviceAccount:${google_service_account.sre_investigator.email}"
 }
 
-# 3. Restricted Gemini API Key
-resource "google_apikeys_key" "gemini_key" {
-  provider     = google-beta
-  name         = "attila-gemini-key"
-  display_name = "A.TT.I.L.A. Gemini API Key"
-
-  restrictions {
-    api_targets {
-      service = "generativelanguage.googleapis.com"
-    }
-  }
+# 3. IAM Binding for Service Account Impersonation
+resource "google_service_account_iam_member" "sre_investigator_impersonator" {
+  service_account_id = google_service_account.sre_investigator.name
+  role               = "roles/iam.serviceAccountTokenCreator"
+  member             = "user:${var.gcp_identity}"
 }
 
 # 4. Pub/Sub Topic for approval flows and event-driven triggers

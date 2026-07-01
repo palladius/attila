@@ -1,8 +1,8 @@
 # LLM Specification: Project A.TT.I.L.A. (Flagello di Dio)
 
-**Status:** DRAFT (Refined for v0.1)
+**Status:** DRAFT (Refined for v0.1 + test-config)
 **Author:** Antigravity (LLM)
-**Source Input:** [riccardo-specs.md](file:///usr/local/google/home/ricc/git/ricclife-with-gemini-pvt/work/bugs/b528279164-attila/docs/SPECS/riccardo-specs.md)
+**Source Input:** [riccardo-specs.md](file:///usr/local/google/home/ricc/git/attila/docs/riccardo-specs.md)
 **Buganizer ID:** [b/528279164](https://b.corp.google.com/issues/528279164)
 
 > _"Ma che è 'sta roba? È la spada di Attila! Chi la impugna è il re dei re!"_ 🗡️ (Ungherese: Isten Kardja)
@@ -13,14 +13,15 @@
 
 Project A.TT.I.L.A. is a stateful SRE investigation tool on Google Cloud Platform (GCP). It enables Gemini-managed agents to retain memory and state across runs by leveraging a persistent storage layer.
 
-To achieve a working PoC by End of Day (EOD) June 30, we are executing a phased roadmap:
+To achieve a working PoC, we are executing a phased roadmap:
 
 ```
 ┌────────────────────────────────┐
-│   v0.1 PoC (EOD June 30)       │
+│   v0.1 PoC                     │
 │   - --storage local            │
 │   - --harness geminicli        │
 │   - Local bind mount           │
+│   - Config validation          │
 └───────────────┬────────────────┘
                 │
                 ▼
@@ -38,7 +39,7 @@ To achieve a working PoC by End of Day (EOD) June 30, we are executing a phased 
 
 The project consists of two core components:
 
-1. **`attila` (Setup CLI)**: Sets up the project directory, configures environment variables, and manages the orchestration.
+1. **`attila` (Setup CLI)**: Sets up the project directory, configures environment variables, validates configuration, and manages the orchestration.
 2. **`spapparo` (Barbarian Harness)**: The agent execution container running the harness.
 
 ### Command-Line Interface
@@ -48,25 +49,12 @@ The `attila` CLI will support the following options:
 ```bash
 attila init --project-id <PROJECT_ID> [--storage <local|gcs>]
 attila run --project-id <PROJECT_ID> [--harness <geminicli|adk>] [--storage <local|gcs>]
-attila test-config --env <ENV_FILE>
+attila test-config <config_file>
 ```
 
 - **`--storage`**: Defaults to `local` in v0.1. Can be set to `gcs` in v0.2+.
 - **`--harness`**: Defaults to `geminicli` in v0.1. Can be set to `adk` in v0.2+.
-
-### Verification Tool: `attila test-config`
-
-To verify the environment and credentials before running the agent, `attila` supports a `test-config` command (implemented as `bin/test-config.sh` in v0.1):
-
-```bash
-attila test-config --env <ENV_FILE>
-```
-
-This tool performs the following checks:
-1. **Service Account Verification**: Verifies the target Service Account (`safe-sre-investigator@$PROJECT_ID.iam.gserviceaccount.com`) exists in the project.
-2. **Gemini API Key (GAK) Verification**: Checks if `GEMINI_API_KEY` is set (if using Developer API) or if Vertex AI is enabled.
-3. **Impersonation Verification**: Verifies that the host identity can successfully impersonate the Service Account by running a test `gcloud` command (e.g., `gcloud storage ls`).
-4. **Harness Authentication Verification**: Verifies that the Gemini CLI can successfully authenticate and call the Vertex AI API (e.g., by running a cheap `gemini` test query like `gemini -p "ping"`).
+- **`test-config`**: Validates the GCP and LLM configuration using the specified config file (e.g., `.env`).
 
 ---
 
@@ -99,18 +87,17 @@ In `local` storage mode, the agent's memory is persisted in a local directory on
 When running the `spapparo` container, the following mounts are required:
 
 - **Memory:** `-v $(pwd)/memory/<PROJECT_ID>:/memory`
-- **GCP Service Account Key:** `-v ~/git/gemini-cli-tools/tools/gcp/service-account-key.json:/etc/gcp/sa-key.json:ro`
+- **GCP Credentials:** `-v $HOME/.config/gcloud/application_default_credentials.json:/adc.json:ro`
 
 ### Container Authentication & Setup (Entrypoint)
 
 On startup, the container's entrypoint script will:
-1. Authenticate `gcloud` using the mounted restricted service account key:
+1. Authenticate `gcloud` using the mounted credentials and set the active account:
    ```bash
-   gcloud auth activate-service-account safe-sre-investigator@$PROJECT_ID.iam.gserviceaccount.com --key-file=/etc/gcp/sa-key.json
    gcloud config set project $PROJECT_ID
-   export GOOGLE_APPLICATION_CREDENTIALS=/etc/gcp/sa-key.json
+   gcloud config set auth/impersonate_service_account "safe-sre-investigator@$PROJECT_ID.iam.gserviceaccount.com"
    ```
-   This ensures any direct `gcloud` execution inside the container is governed by the `safe-sre-investigator` IAM roles (e.g., `Viewer` role allows `gcloud compute instances list` but blocks `delete`/`create`).
+   This ensures any direct `gcloud` execution inside the container is governed by the `safe-sre-investigator` IAM roles.
 2. Install required Gemini extensions:
    ```bash
    gemini extensions install https://github.com/gemini-cli-extensions/sre
@@ -170,3 +157,35 @@ tests:
 
 - **Diego Abatantuono Quotes:** The CLI output and help screens must feature quotes from _Attila Flagello di Dio_ (e.g., _"A come atroce, T come terremoto..."_).
 - **Visuals:** Use terminal colors, rich emojis, and clear Mermaid/Excalidraw diagrams in documentation.
+
+---
+
+## 7. Configuration Testing (`test-config`)
+
+To verify the setup and bypass potential organizational policy or permission blocks, `attila` provides a diagnostic command:
+
+```bash
+attila test-config <config_file>
+```
+
+This command runs a series of checks in order of execution speed (fastest/local first) to fail fast:
+
+1.  **Local Environment Validation**:
+    *   Verifies the config file (e.g., `.env`) exists.
+    *   Checks that all required variables are populated (`PROJECT_ID`, `GCP_IDENTITY`, `GEMINI_API_KEY`).
+2.  **GCP Project & Billing Status**:
+    *   Runs `gcloud projects describe $PROJECT_ID` to verify project existence.
+    *   Runs `gcloud beta billing projects describe $PROJECT_ID` to confirm billing is active.
+3.  **Service Account Existence**:
+    *   Verifies the `safe-sre-investigator@$PROJECT_ID.iam.gserviceaccount.com` service account exists.
+4.  **GCS Buckets Verification**:
+    *   Checks if `gs://$PROJECT_ID-attila-public` and `gs://$PROJECT_ID-attila-private` exist and are accessible.
+5.  **Service Account Impersonation**:
+    *   Verifies the current user (`GCP_IDENTITY`) can successfully impersonate the service account.
+    *   Command: `gcloud --impersonate-service-account=safe-sre-investigator@$PROJECT_ID.iam.gserviceaccount.com auth print-access-token`
+6.  **Gemini API Key Verification**:
+    *   Runs a basic curl or LLM request using the configured `GEMINI_API_KEY` to ensure it is valid and has Gemini access.
+7.  **Harness Execution & Authentication**:
+    *   Verifies that the Docker container can be launched and that the internal `gemini-cli` or agent harness can authenticate correctly.
+8.  **End-to-End Discovery Test**:
+    *   Triggers a minimal discovery task (e.g., listing GCS buckets via the harness) and verifies the output is successfully written to the local `/memory` directory.
