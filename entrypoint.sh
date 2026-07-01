@@ -83,9 +83,6 @@ echo "[+] Creating safe_gcloud wrapper..."
 echo -e '#!/bin/bash\nshift\nexec gcloud "$@"' > /usr/local/bin/safe_gcloud
 chmod +x /usr/local/bin/safe_gcloud
 
-# Set pipefail to ensure we propagate the gemini-cli exit code through the tee pipe
-set -o pipefail
-
 # If arguments are passed, execute them instead of the default agent run
 if [ $# -gt 0 ]; then
   echo -e "[+] Executing custom command inside container: ${BLUE}$*${NC}"
@@ -101,13 +98,6 @@ else
     echo "[+] Using default discovery prompt."
   fi
 
-  # Ensure the logs directory exists in the mounted memory
-  LOG_DIR="/app/memory/logs"
-  mkdir -p "$LOG_DIR"
-  LOG_FILE="$LOG_DIR/$(date +%Y%m%d-%H%M%S)-agent.log"
-  echo "[+] Logging agent session to: $LOG_FILE"
-  echo "----------------------------------------------------"
-
-  # Run gemini-cli in YOLO mode (-y) and save all output to the log file
-  gemini -y -p "$PROMPT" 2>&1 | tee "$LOG_FILE"
+  # Run gemini-cli in YOLO mode (-y) to auto-approve discovery commands
+  exec gemini -y -p "$PROMPT"
 fi
