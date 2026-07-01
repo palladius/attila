@@ -1,5 +1,7 @@
 # A.TT.I.L.A. (Flagello di Dio) 🗡️
 
+"A dockerized, safe to use version of the SRE Extension, good for discovery and investigations".
+
 <p align="center">
   <img src="assets/images/attila_sre_squad.jpg" width="400" alt="Attila's Spappari SRE Squad Logo">
 </p>
