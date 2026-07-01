@@ -30,15 +30,15 @@ cp .env.dist .env
 ```
 Open `.env` and configure the following variables:
 *   `PROJECT_ID`: Your target Google Cloud project (e.g., `sre-next`).
-*   `GCP_IDENTITY`: Your active GCP email (e.g., `your-name@gcp.altostrat.com` or `your-name@gmail.com`).
+*   `GCP_IDENTITY`: Your active GCP email (e.g., `your-name@my-gcp-domain.com` or `your-name@gmail.com`).
     > [!IMPORTANT]
-    > **Bypassing CAA Blocks:** Do NOT use your main `@google.com` corp account here. Google Corp accounts are blocked inside Docker by Context-Aware Access (CAA). Use an alternative identity (like Altostrat or a personal Gmail) that you have authenticated on your host.
+    > **Bypassing CAA Blocks:** Do NOT use your main `@google.com` corp account here. Google Corp accounts are blocked inside Docker by Context-Aware Access (CAA). Use an alternative identity (like a partner domain or a personal Gmail) that you have authenticated on your host.
 
 ### Step 3: Authenticate on the Host
 The container mounts your host's gcloud credentials. You must authenticate the target `GCP_IDENTITY` on your host at least once before running the container:
 ```bash
 # 1. Login with your target identity
-gcloud auth login your-name@gcp.altostrat.com
+gcloud auth login your-name@my-gcp-domain.com
 
 # 2. Generate Application Default Credentials (ADC)
 gcloud auth application-default login
@@ -96,11 +96,11 @@ You should see the barbarian startup banner confirming your identities:
 🗡️  Spapparo Barbarian Agent starting up...
 ====================================================
 🟢 PROJECT ID: sre-next
-🟢 HOST IDENTITY: your-name@gcp.altostrat.com
+🟢 HOST IDENTITY: your-name@my-gcp-domain.com
 🟢 IMPERSONATING: safe-sre-investigator@sre-next.iam.gserviceaccount.com
 ====================================================
 [+] Configuring SDK with mounted ADC...
-[+] Setting active gcloud account to: your-name@gcp.altostrat.com
+[+] Setting active gcloud account to: your-name@my-gcp-domain.com
 ...
 [+] Successfully impersonating safe-sre-investigator@sre-next.iam.gserviceaccount.com
 [+] Creating safe_gcloud wrapper...
