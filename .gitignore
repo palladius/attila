@@ -7,3 +7,6 @@ credentials.json
 .terraform/
 terraform.tfstate*
 *.tfvars
+.env.*
+GEMINI.local.md
+private/
