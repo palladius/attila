@@ -39,10 +39,21 @@ else
   echo "[+] No TTY detected. Running in non-interactive mode."
 fi
 
-# Retrieve active account from host to pass to gcloud in container
-ACTIVE_ACCOUNT=$(gcloud config get-value account 2>/dev/null || true)
+# 2. Determine active account (prefer env var if set in ENV_FILE)
+# Map GCP_IDENTITY to CLOUDSDK_CORE_ACCOUNT if present
+if [ -z "${CLOUDSDK_CORE_ACCOUNT:-}" ] && [ -n "${GCP_IDENTITY:-}" ]; then
+  CLOUDSDK_CORE_ACCOUNT="$GCP_IDENTITY"
+fi
+
+if [ -z "${CLOUDSDK_CORE_ACCOUNT:-}" ]; then
+  ACTIVE_ACCOUNT=$(gcloud config get-value account 2>/dev/null || echo "")
+else
+  ACTIVE_ACCOUNT="$CLOUDSDK_CORE_ACCOUNT"
+fi
+
 if [ -z "$ACTIVE_ACCOUNT" ]; then
-  echo "[!] WARNING: Could not detect active gcloud account on host."
+  echo "[-] Error: No active gcloud account detected on host, and CLOUDSDK_CORE_ACCOUNT is not set."
+  exit 1
 fi
 
 # 4. Run the container
@@ -52,7 +63,7 @@ docker run $DOCKER_FLAGS \
   -e AGENT_PROMPT="$PROMPT" \
   -e GEMINI_MODEL="${GEMINI_MODEL:-}" \
   -e CLOUDSDK_CORE_ACCOUNT="$ACTIVE_ACCOUNT" \
-  -v "$(pwd)/memory/$PROJECT_ID":/memory \
+  -v "$(pwd)/memory/$PROJECT_ID":/app/memory \
   -v "$USER_HOME/.config/gcloud/application_default_credentials.json:/adc.json:ro" \
   -v "$USER_HOME/.config/gcloud/credentials.db:/gcloud-credentials-db-ro/credentials.db:ro" \
   "attila:v${VERSION}"

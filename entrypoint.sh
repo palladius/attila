@@ -57,9 +57,9 @@ export GOOGLE_CLOUD_LOCATION="us-central1"
 export GOOGLE_GENAI_USE_VERTEXAI=true
 export GEMINI_MODEL="${GEMINI_MODEL:-gemini-2.5-flash}"
 
-# Ensure gemini-cli config directory exists and pre-trust the /app and /memory workspaces
+# Ensure gemini-cli config directory exists and pre-trust the /app workspace
 mkdir -p /root/.gemini
-echo '{"/app": "TRUST_FOLDER", "/memory": "TRUST_FOLDER"}' > /root/.gemini/trustedFolders.json
+echo '{"/app": "TRUST_FOLDER"}' > /root/.gemini/trustedFolders.json
 
 # Verify impersonation works for gcloud
 echo "[+] Verifying Service Account impersonation..."
@@ -89,7 +89,7 @@ else
     PROMPT="$AGENT_PROMPT"
     echo "[+] Using custom prompt: $PROMPT"
   else
-    PROMPT="Perform a GCP discovery of the project $PROJECT_ID. Identify all active resources (GCS buckets, Cloud Run services, GKE clusters, etc.). Write your findings in a clear markdown report to /memory/discovery/\$(date +%Y-%m-%d)-discovery.md and compile the resource graph into /memory/architecture.json. Keep it detailed but concise."
+    PROMPT="Perform a GCP discovery of the project $PROJECT_ID. Identify all active resources (GCS buckets, Cloud Run services, GKE clusters, etc.). Write your findings in a clear markdown report to /app/memory/discovery/\$(date +%Y-%m-%d)-discovery.md and compile the resource graph into /app/memory/architecture.json. Keep it detailed but concise."
     echo "[+] Using default discovery prompt."
   fi
 
