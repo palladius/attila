@@ -9,7 +9,7 @@ import sys
 import argparse
 from pathlib import Path
 
-VERSION = "0.1.0"
+VERSION = "0.2.0"
 
 ATTILA_ART = r"""
         ______      __    __      _                 
@@ -112,6 +112,25 @@ def run_agent(project_id, storage, harness):
     print("\033[32m[+] To start the container, run:\033[0m")
     print(f"    just run-discovery {project_id}")
 
+def test_config(config_file):
+    print_quote()
+    print(f"\033[32m[+] Running configuration tests using: {config_file}\033[0m")
+    base_dir = Path(__file__).parent.parent
+    script_path = base_dir / "bin" / "test-config.sh"
+    
+    if not script_path.exists():
+        print(f"\033[31m[-] Error: test-config.sh script not found at {script_path}\033[0m")
+        sys.exit(1)
+        
+    import subprocess
+    try:
+        # Run the bash script and propagate its exit code
+        result = subprocess.run(["bash", str(script_path), config_file], cwd=str(base_dir))
+        sys.exit(result.returncode)
+    except Exception as e:
+        print(f"\033[31m[-] Error executing test script: {e}\033[0m")
+        sys.exit(1)
+
 def main():
     parser = argparse.ArgumentParser(
         description="ATTILA: Stateful Gemini Managed Agents via GCS/Docker",
@@ -133,6 +152,10 @@ def main():
     run_parser.add_argument("--storage", choices=["local", "gcs"], default="local", help="Storage type (default: local)")
     run_parser.add_argument("--harness", choices=["geminicli", "adk"], default="geminicli", help="Agent harness (default: geminicli)")
     
+    # Test-config command
+    test_parser = subparsers.add_parser("test-config", help="Validate the GCP and LLM configuration")
+    test_parser.add_argument("config_file", nargs="?", default=".env", help="Path to the config file (default: .env)")
+
     args = parser.parse_args()
     
     print(ATTILA_ART)
@@ -141,6 +164,8 @@ def main():
         init_project(args.project_id, args.storage, args.harness)
     elif args.command == "run":
         run_agent(args.project_id, args.storage, args.harness)
+    elif args.command == "test-config":
+        test_config(args.config_file)
 
 if __name__ == "__main__":
     main()

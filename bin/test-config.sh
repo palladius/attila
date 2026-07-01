@@ -17,6 +17,9 @@ echo -e "${BOLD}====================================================${NC}"
 echo -e "${BOLD}🗡️  Attila Config Validator starting...${NC}"
 echo -e "${BOLD}====================================================${NC}"
 
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+VERSION=$(cat "$SCRIPT_DIR/../VERSION")
+
 # 1. Load environment variables
 ENV_FILE="${1:-.env}"
 if [ -f "$ENV_FILE" ]; then
@@ -196,7 +199,7 @@ if timeout 30 docker run --rm \
   -e CLOUDSDK_CORE_ACCOUNT="$HOST_IDENTITY" \
   -v "$ADC_PATH":/adc.json:ro \
   -v "$CRED_DB_PATH":/gcloud-credentials-db-ro/credentials.db:ro \
-  attila:v0.1.0 \
+  "attila:v${VERSION}" \
   gcloud storage buckets list --project="$PROJECT_ID" \
   > /tmp/attila-test-container-gcloud.log 2>&1; then
   
@@ -230,7 +233,7 @@ if timeout 30 docker run --rm \
   -e GEMINI_MODEL="${GEMINI_MODEL:-gemini-2.5-flash}" \
   -v "$ADC_PATH":/adc.json:ro \
   -v "$CRED_DB_PATH":/gcloud-credentials-db-ro/credentials.db:ro \
-  attila:v0.1.0 \
+  "attila:v${VERSION}" \
   gemini -y -p "write exactly one word: success" > /tmp/attila-test-auth.log 2>&1; then
   
   if grep -qi "success" /tmp/attila-test-auth.log; then
@@ -262,7 +265,7 @@ if timeout 60 docker run --rm \
   -e GEMINI_MODEL="${GEMINI_MODEL:-gemini-2.5-flash}" \
   -v "$ADC_PATH":/adc.json:ro \
   -v "$CRED_DB_PATH":/gcloud-credentials-db-ro/credentials.db:ro \
-  attila:v0.1.0 \
+  "attila:v${VERSION}" \
   gemini -y -p "The safe-sre-investigator setup is ALREADY complete. Do NOT run the setup script. List the GCS buckets in the project $PROJECT_ID and show them. Conclude with 'E2E_SUCCESS' if you succeeded." > /tmp/attila-test-e2e.log 2>&1; then
   
   if grep -qi "E2E_SUCCESS" /tmp/attila-test-e2e.log; then
