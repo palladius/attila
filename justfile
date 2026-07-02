@@ -92,5 +92,5 @@ check:
 	echo 'Quick summary of .env, is there anything missing?'
 
 # Run the Conductor inspector to display track status
-conductor-status *args="--all":
+conductor-status *args="--all --short":
 	@python3 conductor/bin/conductor-inspector {{args}}
