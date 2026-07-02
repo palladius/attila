@@ -20,3 +20,7 @@ Tracks represent units of work (features, bug fixes, refactoring).
 | :--- | :--- | :--- | :--- |
 | `01-verify-infra` | Verify and Run Terraform Infrastructure | Planned | [Link](tracks/01-verify-infra/index.md) |
 | `benjamin-discovery_20260702` | Implement Benjamin-Style GCP Discovery (v3) | Planned | [Link](tracks/benjamin-discovery_20260702/index.md) |
+| `gcs-sync_20260702` | Bi-directional GCS Backup and Sync | Planned | [Link](tracks/gcs-sync_20260702/index.md) |
+| `logging-o11y_20260702` | Observability and Cost Logging | Planned | [Link](tracks/logging-o11y_20260702/index.md) |
+| `adk-harness_20260702` | Python ADK Harness Migration | Planned | [Link](tracks/adk-harness_20260702/index.md) |
+| `pubsub-approvals_20260702` | Pub/Sub and Approvals Flow | Planned | [Link](tracks/pubsub-approvals_20260702/index.md) |

@@ -1,0 +1,8 @@
+{
+  "track_id": "logging-o11y_20260702",
+  "type": "feature",
+  "status": "new",
+  "created_at": "2026-07-02T14:45:00Z",
+  "updated_at": "2026-07-02T14:45:00Z",
+  "description": "Implement OpenTelemetry, cost/token tracking, and container activity logging"
+}
