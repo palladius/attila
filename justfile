@@ -78,5 +78,15 @@ test-config env_file=".env":
 test:
 	echo tODO tests
 
+# Run the container interactively with a bash shell
+docker-interactive:
+	@chmod +x bin/run-discovery.sh
+	./bin/run-discovery.sh bash
+
+# Run a cheap query inside the container to test authentication
+docker-test-auth:
+	@chmod +x bin/run-discovery.sh
+	./bin/run-discovery.sh gemini -y -p "write exactly one word: success"
+
 check:
 	echo 'Quick summary of .env, is there anything missing?'

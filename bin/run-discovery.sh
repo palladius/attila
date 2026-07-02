@@ -12,4 +12,4 @@ ENV_FILE="${2:-.env}"
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 
 # Forward to the generic runner by setting AGENT_PROMPT in the env
-AGENT_PROMPT="$PROMPT" exec "$SCRIPT_DIR/docker-run.sh" "$ENV_FILE"
+AGENT_PROMPT="$PROMPT" exec "$SCRIPT_DIR/docker-run.sh" "$ENV_FILE" "$@"
