@@ -78,26 +78,21 @@ else
   echo "[!] WARNING: Impersonation verification failed. gcloud commands may fail."
 fi
 
-# Create safe_gcloud wrapper to satisfy the SRE extension
-echo "[+] Creating safe_gcloud wrapper..."
-echo -e '#!/bin/bash\nshift\nexec gcloud "$@"' > /usr/local/bin/safe_gcloud
-chmod +x /usr/local/bin/safe_gcloud
+# Execute the Gemini CLI with the prompt or pass-through to custom command
+echo "----------------------------------------------------"
 
-# If arguments are passed, execute them instead of the default agent run
-if [ $# -gt 0 ]; then
-  echo -e "[+] Executing custom command inside container: ${BLUE}$*${NC}"
-  echo "----------------------------------------------------"
-  exec "$@"
-else
-  # Construct the prompt
-  if [ -n "$AGENT_PROMPT" ]; then
+if [ $# -eq 0 ]; then
+  # Construct the default prompt
+  if [ -n "${AGENT_PROMPT:-}" ]; then
     PROMPT="$AGENT_PROMPT"
     echo "[+] Using custom prompt: $PROMPT"
   else
-    PROMPT="Perform a GCP discovery of the project $PROJECT_ID. Identify all active resources (GCS buckets, Cloud Run services, GKE clusters, etc.). Write your findings in a clear markdown report to /app/memory/discovery/\$(date +%Y-%m-%d)-discovery.md and compile the resource graph into /app/memory/architecture.json. Keep it detailed but concise."
+    PROMPT="Perform a GCP discovery of the project $PROJECT_ID. Identify all active resources (GCS buckets, Cloud Run services, GKE clusters, etc.). Write your findings in a clear markdown report to /memory/discovery/\$(date +%Y-%m-%d)-discovery.md and compile the resource graph into /memory/architecture.json. Keep it detailed but concise."
     echo "[+] Using default discovery prompt."
   fi
-
-  # Run gemini-cli in YOLO mode (-y) to auto-approve discovery commands
+  echo "[+] Launching Gemini CLI discovery via Vertex AI (YOLO mode)..."
   exec gemini -y -p "$PROMPT"
+else
+  echo "[+] Bypassing default agent. Executing custom command: $@"
+  exec "$@"
 fi
