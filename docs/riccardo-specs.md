@@ -29,7 +29,7 @@ Note GCS bucket is an inpuit to terraform as it holds the state under BUCKET/tfs
   - `gs://PROJECT_ID-attila-public` will be a public bucket and will be used from the harness to exchange public, non-authenticated HTML pages with research, ideas, plans, ..
   - `gs://PROJECT_ID-attila-private` will hold the results of the investigations, playbooks, memory, and intimate parts of the system.
 - set up a restricted `Gemini API KEY`. this will be only able to access gemini, and will be the heart of agentic behaviour inside the harness. It would be nice to create a different key per spapparo to be able to monitor costs and invalidate the keys should the barbarian go rogue
-- **Service Account** Setup. See "Safe investigation" skill in SRE Extension. The name will be `safe-sre-investigator@...` (using SA impersonation instead of local JSON key files).
+- **Service Account** Setup. See "Safe investigation" skill in SRE Extension. The name will be `safe-sre-investigator@<PROJECT_ID>.iam.gserviceaccount.com` (using SA impersonation instead of local JSON key files).
 - **Pub/Sub**. We want communication to happen via well-documented P/S pathways. This will allow a proliferation of workflows (ie, let me add a Telegram channel here, lets me get GMail notifications there, let me trigger a new agent whenever XX happens, and so on).
 
 ### 3. test
