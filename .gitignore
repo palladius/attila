@@ -12,3 +12,4 @@ GEMINI.local.md
 private/
 terraform/.terraform.lock.hcl
 .git-privatize
+.worktrees/
