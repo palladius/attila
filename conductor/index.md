@@ -19,3 +19,4 @@ Tracks represent units of work (features, bug fixes, refactoring).
 | Track ID | Description | Status | Link |
 | :--- | :--- | :--- | :--- |
 | `01-verify-infra` | Verify and Run Terraform Infrastructure | Planned | [Link](tracks/01-verify-infra/index.md) |
+| `benjamin-discovery_20260702` | Implement Benjamin-Style GCP Discovery (v3) | Planned | [Link](tracks/benjamin-discovery_20260702/index.md) |
